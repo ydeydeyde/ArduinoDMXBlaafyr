@@ -2,11 +2,15 @@
 #include <Adafruit_NeoPixel.h>
 #define PIN 7
 
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(144, PIN, NEO_GRB + NEO_KHZ800);
+// Number of Pixels on the strip
+int numPixels = 144;
+
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(numPixels, PIN, NEO_GRB + NEO_KHZ800);
 
 // Flame
 int lowerOffSet = 15;
 int upperOffSet = 15;
+// Flame density
 int flame = 1;
 
 // General brightness
@@ -30,8 +34,7 @@ void setup() {
 void loop() {
   wp = random(89,95);
   // Some example procedures showing how to display to the pixels:
-  midArea(strip.Color(wp,wp, wp));
-  
+  midArea(strip.Color(wp,wp, wp)); 
   // Upper and lower area are blue right now 
   upperArea(strip.Color(100,0, 0));
   lowerArea(strip.Color(100,0,0));
