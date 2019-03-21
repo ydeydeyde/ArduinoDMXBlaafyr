@@ -1,18 +1,26 @@
+#include <Conceptinetics.h>
 #include <Adafruit_NeoPixel.h>
-#ifdef __AVR__
-  #include <avr/power.h>
-#endif
-
 #define PIN 7
+
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(144, PIN, NEO_GRB + NEO_KHZ800);
+
+// Flame
+int lowerOffSet = 15;
+int upperOffSet = 15;
+int flame = 1;
+
+// General brightness
+int bright = 50;
 
 // Spread of inner color
 int upperBorder = 80;
-int lowerBorder = 30;
+int lowerBorder = 40;
 
 // Noise level 
 int flckr = random(20);
 
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(144, PIN, NEO_GRB + NEO_KHZ800);
+// White Power
+int wp = 50;
 
 void setup() {
   strip.begin();
@@ -20,23 +28,28 @@ void setup() {
 }
 
 void loop() {
+  wp = random(89,95);
   // Some example procedures showing how to display to the pixels:
-  midArea(strip.Color(40,40, flckr), 50); 
-  upperArea(strip.Color(20,20, 50),50);
-  lowerArea(strip.Color(20,20,50),50);
+  midArea(strip.Color(wp,wp, wp));
+  
+  // Upper and lower area are blue right now 
+  upperArea(strip.Color(100,0, 0));
+  lowerArea(strip.Color(100,0,0));
+  //strip.setBrightness(50); 
 }
 
 // Fill the dots one after the other with a color
-void midArea(uint32_t c, uint8_t wait) {
-  for(uint16_t i=lowerBorder; i<upperBorder; i++) {
+void midArea(uint32_t c) {
+  for(uint16_t i=lowerBorder-random(0,lowerOffSet); i<upperBorder+random(0,upperOffSet); i++) {
     strip.setPixelColor(i, c);
+    strip.setPixelColor(random(lowerBorder,upperBorder), c);
     strip.show();
   }
 }
 
 // Fill the dots one after the other with a color
-void upperArea(uint32_t c, uint8_t wait) {
-  for(uint16_t i=0; i<40; i++) {
+void upperArea(uint32_t c) {
+  for(uint16_t i=0; i<lowerBorder; i++) {
     strip.setPixelColor(i, c);
     strip.show();
    // delay(wait);
@@ -44,12 +57,10 @@ void upperArea(uint32_t c, uint8_t wait) {
 }
 
 // Fill the dots one after the other with a color
-void lowerArea(uint32_t c, uint8_t wait) {
-  for(uint16_t i=85; i<=144; i++) {
-    for (int c = 0; c<100; c+5) {
+void lowerArea(uint32_t c) {
+  for(uint16_t i=upperBorder+1; i<144; i++) {
     strip.setPixelColor(i, c);
     strip.show();
-    }
    // delay(wait);
   }
 }
