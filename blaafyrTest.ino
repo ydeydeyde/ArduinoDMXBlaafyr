@@ -13,7 +13,7 @@ int flame = 1;
 int bright = 50;
 
 // Spread of inner color
-int upperBorder = 80;
+int upperBorder = 60;
 int lowerBorder = 40;
 
 // Noise level 
@@ -52,7 +52,6 @@ void upperArea(uint32_t c) {
   for(uint16_t i=0; i<lowerBorder; i++) {
     strip.setPixelColor(i, c);
     strip.show();
-   // delay(wait);
   }
 }
 
@@ -61,6 +60,5 @@ void lowerArea(uint32_t c) {
   for(uint16_t i=upperBorder+1; i<144; i++) {
     strip.setPixelColor(i, c);
     strip.show();
-   // delay(wait);
   }
 }
