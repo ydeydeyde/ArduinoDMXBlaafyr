@@ -4,7 +4,7 @@
 #define NEOPIXEL_PIN 7
 
 // Define number of pixels on LED strip
-#define numPixels 4
+#define numPixels 75
 #define DMX_SLAVE_CHANNELS 4
 
 #define DMX_ADDRESS 1
@@ -14,11 +14,8 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(numPixels, NEOPIXEL_PIN, NEO_GRB + N
 // Slave mode (not master)
 DMX_Slave dmx_slave ( DMX_SLAVE_CHANNELS );
 
-int lowMap = 0;
-int highMap = 0;
-
-// Universal color / brightness
-byte color;
+// Brightness
+byte bright;
 
 // Spread of flame
 byte lowerBorder;
@@ -26,45 +23,76 @@ byte upperBorder;
 
 void setup() {
   dmx_slave.enable ();
-  // Set start address to 1, this is also the default setting
-  // You can change this address at any time during the program
   dmx_slave.setStartAddress (DMX_ADDRESS);
-  // Initialize the NeoPixels.
+
   strip.begin();
-  strip.show(); // Initialize all pixels to 'off'
-  //delay (1000);
-  lowMap = map(lowerBorder,1,255,1,4);
-  highMap = map(upperBorder,1,255,1,4);
+  strip.show();
 }
 
 void loop() {
-  color = dmx_slave.getChannelValue (DMX_ADDRESS);
+  bright = dmx_slave.getChannelValue (DMX_ADDRESS);
   lowerBorder = dmx_slave.getChannelValue (DMX_ADDRESS + 1);
   upperBorder = dmx_slave.getChannelValue (DMX_ADDRESS + 2);;
+  lowerBorder = map(lowerBorder, 1, 255, 1, numPixels);
+  upperBorder = map(upperBorder, 1, 255, 1, numPixels);
 
-  lowMap = lowerBorder;
-  highMap = upperBorder;
-  
-  flameSpread(strip.Color(color,color,color));
-  outerBlue(strip.Color(0,0,color));
-  
+  int bRandom = random(255);
+  if (bright > 0) {
+    flameSpread(strip.Color(bRandom, bRandom, bRandom));
+    flameSpread(strip.Color(bright, bright, bright));
+
+    flameOffSet(strip.Color(bRandom, bRandom, bRandom));
+
+    outerBlue(strip.Color(0, 0, bright));
+  }
   strip.show();
 }
 
 void flameSpread(uint32_t c) {
-  for (int i = lowerBorder; i<upperBorder; i++) {
+  for (int i = lowerBorder; i < upperBorder; i++) {
+    strip.setPixelColor(i, c);
+    strip.show();
+  }
+}
+
+void flameOffSet(uint32_t c) {
+  for (int i = lowerBorder; i < upperBorder; i = i + 3) {
     strip.setPixelColor(i, c);
     strip.show();
   }
 }
 
 void outerBlue(uint32_t c) {
-  for (int i = 0; i<lowerBorder; i++) {
-     strip.setPixelColor(i,c);
-     strip.show();
+  for (int i = 0; i < lowerBorder; i++) {
+    strip.setPixelColor(i, c);
+   // strip.show();
   }
-    for (int j = upperBorder+1; j<numPixels; j++) {
-     strip.setPixelColor(j,c);
-     strip.show();
+  for (int j = upperBorder; j < numPixels; j++) {
+    strip.setPixelColor(j, c);
+   // strip.show();
+  }
+  for (int l = upperBorder; l < numPixels; l++) {
+    //float fade = sin(l / numPixels * PI);
+    //int red = (c & 0xFF0000) >> 16;
+    //int green = (c & 0xFF00) >> 8;
+    //int blue = c & 0xFF;
+    //c = (int)(red * fade) << 16 + (int)(green * fade) << 8 + (int)(blue * fade);
+    strip.setPixelColor(l, random(c));
+    strip.show();
+  }
+  for (int m = 0; m < 15; m++) {
+    //float fade = sin(m / numPixels * PI);
+    //int red = (c & 0xFF0000) >> 16;
+    //int green = (c & 0xFF00) >> 8;
+    //int blue = c & 0xFF;
+    //c = (int)(red * fade) << 16 + (int)(green * fade) << 8 + (int)(blue * fade);
+    strip.setPixelColor(m, c);
+    strip.show();
+  }
+  if (bright > 100) {
+    for (int k = 0; k < lowerBorder; k++) {
+      strip.setPixelColor(k, random(c));
+      strip.show();
+    }
   }
 }
